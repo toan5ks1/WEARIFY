@@ -182,13 +182,6 @@ export const productCategories = [
   },
 ] satisfies Category[]
 
-export const categoriesList = [
-  "skateboards",
-  "clothing",
-  "shoes",
-  "accessories",
-] as const
-
 export const productTags = [
   "new",
   "sale",

@@ -35,6 +35,7 @@ export async function generateProducts({
       rating: faker.number.float({ min: 0, max: 5, precision: 0.1 }),
       category,
       subcategory,
+      isFeatured: false,
       images: null,
       createdAt: faker.date.past(),
       inventory: faker.number.int({ min: 0, max: 100 }),

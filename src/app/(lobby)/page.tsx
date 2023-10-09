@@ -41,9 +41,7 @@ export default async function IndexPage({ searchParams }: IndexPageProps) {
     .limit(4)
     .leftJoin(stores, eq(products.storeId, stores.id))
     .where(
-      typeof category === "string"
-        ? eq(products.category, category as Product["category"])
-        : undefined
+      typeof category === "string" ? eq(products.category, category) : undefined
     )
     .groupBy(products.id)
     .orderBy(desc(stores.stripeAccountId), desc(products.createdAt))
