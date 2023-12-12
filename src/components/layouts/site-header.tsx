@@ -4,6 +4,7 @@ import { DashboardIcon, ExitIcon, GearIcon } from "@radix-ui/react-icons"
 
 import { dashboardConfig } from "@/config/dashboard"
 import { siteConfig } from "@/config/site"
+import { getAllCategoryWithSubAction } from "@/lib/fetchers/category"
 import { getUserEmail } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -27,16 +28,18 @@ interface SiteHeaderProps {
   user: User | null
 }
 
-export function SiteHeader({ user }: SiteHeaderProps) {
+export async function SiteHeader({ user }: SiteHeaderProps) {
   const initials = `${user?.firstName?.charAt(0) ?? ""} ${
     user?.lastName?.charAt(0) ?? ""
   }`
   const email = getUserEmail(user)
 
+  const allCategories = await getAllCategoryWithSubAction()
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container flex h-16 items-center">
-        <MainNav items={siteConfig.mainNav} />
+        <MainNav categories={allCategories} />
         <MobileNav
           mainNavItems={siteConfig.mainNav}
           sidebarNavItems={dashboardConfig.sidebarNav}

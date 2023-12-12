@@ -27,7 +27,7 @@ import { UpdateProductRatingButton } from "@/components/update-product-rating-bu
 interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: Pick<
     Product,
-    "id" | "name" | "price" | "images" | "category" | "inventory" | "rating"
+    "id" | "name" | "price" | "images" | "inventory" | "rating"
   >
   variant?: "default" | "switchable"
   isAddedToCart?: boolean

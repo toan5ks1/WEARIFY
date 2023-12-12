@@ -8,15 +8,11 @@ import { desc, eq, sql } from "drizzle-orm"
 import { Balancer } from "react-wrap-balancer"
 
 import { productCategories } from "@/config/products"
-import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { CategoryCard } from "@/components/cards/category-card"
 import { ProductCard } from "@/components/cards/product-card"
 import { StoreCard } from "@/components/cards/store-card"
-import { Icons } from "@/components/icons"
 import { Shell } from "@/components/shells/shell"
 import { ProductCardSkeleton } from "@/components/skeletons/product-card-skeleton"
 import { StoreCardSkeleton } from "@/components/skeletons/store-card-skeleton"
@@ -30,7 +26,7 @@ export default async function IndexPage() {
           id: products.id,
           name: products.name,
           images: products.images,
-          category: products.category,
+          subcategoryId: products.subcategoryId,
           price: products.price,
           inventory: products.inventory,
           rating: products.rating,
@@ -75,35 +71,6 @@ export default async function IndexPage() {
     }
   )()
 
-  async function getGithubStars(): Promise<number | null> {
-    try {
-      const response = await fetch(
-        "https://api.github.com/repos/sadmann7/skateshop",
-        {
-          headers: {
-            Accept: "application/vnd.github+json",
-          },
-          next: {
-            revalidate: 60,
-          },
-        }
-      )
-
-      if (!response.ok) {
-        return null
-      }
-
-      const data = (await response.json()) as { stargazers_count: number }
-
-      return data.stargazers_count
-    } catch (err) {
-      console.error(err)
-      return null
-    }
-  }
-
-  const githubStars = await getGithubStars()
-
   return (
     <Shell className="max-w-6xl pt-0 md:pt-0">
       <section
@@ -111,19 +78,6 @@ export default async function IndexPage() {
         aria-labelledby="hero-heading"
         className="mx-auto flex w-full max-w-[64rem] flex-col items-center justify-center gap-4 py-12 text-center md:pt-32"
       >
-        <React.Suspense fallback={<Skeleton className="h-7 w-44" />}>
-          <Link href={siteConfig.links.github} target="_blank" rel="noreferrer">
-            <Badge
-              aria-hidden="true"
-              className="rounded-md px-3.5 py-1.5"
-              variant="secondary"
-            >
-              <Icons.gitHub className="mr-2 h-3.5 w-3.5" aria-hidden="true" />
-              {githubStars} stars on GitHub
-            </Badge>
-            <span className="sr-only">GitHub</span>
-          </Link>
-        </React.Suspense>
         <Balancer
           as="h1"
           className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-7xl"
@@ -152,7 +106,7 @@ export default async function IndexPage() {
           </Link>
         </div>
       </section>
-      <section
+      {/* <section
         id="categories"
         aria-labelledby="categories-heading"
         className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
@@ -160,7 +114,7 @@ export default async function IndexPage() {
         {productCategories.map((category) => (
           <CategoryCard key={category.title} category={category} />
         ))}
-      </section>
+      </section> */}
       <section
         id="featured-products"
         aria-labelledby="featured-products-heading"
