@@ -2,8 +2,7 @@ import * as React from "react"
 import { unstable_noStore as noStore } from "next/cache"
 import Link from "next/link"
 import { db } from "@/db"
-import { products } from "@/db/schema"
-import type { Category } from "@/types"
+import { products, type Category } from "@/db/schema"
 import { eq, sql } from "drizzle-orm"
 
 import {
