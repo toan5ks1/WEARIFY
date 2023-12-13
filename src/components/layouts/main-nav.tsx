@@ -96,14 +96,25 @@ export function MainNav({ categories }: MainNavProps) {
             <NavigationMenuTrigger className="h-auto capitalize">
               {mainNav.title}
             </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+            <NavigationMenuContent className="w-full ">
+              <ul className="flex gap-3 p-4">
                 {mainNav.items?.map((item) => (
-                  <ListItem
-                    key={item.title}
-                    title={item.title}
-                    href={item.href}
-                  ></ListItem>
+                  <ListItem key={item.title}>
+                    <ul className="flex w-[100px] flex-col gap-3 md:w-[200px] lg:w-[200px]">
+                      <ListSubItem
+                        key={item.title}
+                        title={item.title}
+                        href={item.href}
+                      />
+                      {item.items?.map((subItem) => (
+                        <ListSubItem
+                          key={subItem.title}
+                          title={subItem.title}
+                          href={subItem.href}
+                        />
+                      ))}
+                    </ul>
+                  </ListItem>
                 ))}
               </ul>
             </NavigationMenuContent>
@@ -140,3 +151,30 @@ const ListItem = React.forwardRef<
   )
 })
 ListItem.displayName = "ListItem"
+
+const ListSubItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, href, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <Link
+          ref={ref}
+          href={String(href)}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:text-accent-foreground focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </Link>
+      </NavigationMenuLink>
+    </li>
+  )
+})
+ListSubItem.displayName = "ListSubItem"
