@@ -63,22 +63,22 @@ export function MainNav({ categories }: MainNavProps) {
             <NavigationMenuContent asChild>
               <ul className="flex w-screen gap-3 p-4">
                 {mainNav.items?.map((item) => (
-                  <ListItem key={item.title}>
+                  <li key={item.title}>
                     <ul className="flex w-[180px] flex-col gap-3">
-                      <ListSubItem
+                      <ListItem
                         key={item.title}
                         title={item.title}
                         href={item.href}
                       />
                       {item.items?.map((subItem) => (
-                        <ListSubItem
+                        <ListItem
                           key={subItem.title}
                           title={subItem.title}
                           href={subItem.href}
                         />
                       ))}
                     </ul>
-                  </ListItem>
+                  </li>
                 ))}
               </ul>
             </NavigationMenuContent>

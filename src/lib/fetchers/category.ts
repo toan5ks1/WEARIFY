@@ -10,6 +10,15 @@ export async function getCategoryAction(id: number) {
   })
 }
 
+export async function getCategoryWithSubAction(slug: string) {
+  return await db.query.categories.findFirst({
+    where: eq(categories.slug, slug),
+    with: {
+      subcategories: true,
+    },
+  })
+}
+
 export async function getAllCategoryWithSubAction() {
   return await db.query.categories.findMany({
     columns: { title: true },
