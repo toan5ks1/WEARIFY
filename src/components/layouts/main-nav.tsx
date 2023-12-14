@@ -55,6 +55,34 @@ export function MainNav({ categories }: MainNavProps) {
       </Link>
       <NavigationMenu>
         <NavigationMenuList>
+          {/* Catalog */}
+          <NavigationMenuItem key={mainNav.title}>
+            <NavigationMenuTrigger className="h-auto capitalize">
+              {mainNav.title}
+            </NavigationMenuTrigger>
+            <NavigationMenuContent asChild>
+              <ul className="flex w-screen gap-3 p-4">
+                {mainNav.items?.map((item) => (
+                  <ListItem key={item.title}>
+                    <ul className="flex w-[180px] flex-col gap-3">
+                      <ListSubItem
+                        key={item.title}
+                        title={item.title}
+                        href={item.href}
+                      />
+                      {item.items?.map((subItem) => (
+                        <ListSubItem
+                          key={subItem.title}
+                          title={subItem.title}
+                          href={subItem.href}
+                        />
+                      ))}
+                    </ul>
+                  </ListItem>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
           {/* Lobby */}
           <NavigationMenuItem>
             <NavigationMenuTrigger className="h-auto">
@@ -86,34 +114,6 @@ export function MainNav({ categories }: MainNavProps) {
                     href={item.href}
                   >
                     {item.description}
-                  </ListItem>
-                ))}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          {/* Catalog */}
-          <NavigationMenuItem key={mainNav.title}>
-            <NavigationMenuTrigger className="h-auto capitalize">
-              {mainNav.title}
-            </NavigationMenuTrigger>
-            <NavigationMenuContent className="w-full ">
-              <ul className="flex gap-3 p-4">
-                {mainNav.items?.map((item) => (
-                  <ListItem key={item.title}>
-                    <ul className="flex w-[100px] flex-col gap-3 md:w-[200px] lg:w-[200px]">
-                      <ListSubItem
-                        key={item.title}
-                        title={item.title}
-                        href={item.href}
-                      />
-                      {item.items?.map((subItem) => (
-                        <ListSubItem
-                          key={subItem.title}
-                          title={subItem.title}
-                          href={subItem.href}
-                        />
-                      ))}
-                    </ul>
                   </ListItem>
                 ))}
               </ul>
