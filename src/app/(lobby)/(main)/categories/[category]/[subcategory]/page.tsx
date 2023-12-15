@@ -16,7 +16,7 @@ import { Shell } from "@/components/shells/shell"
 
 interface SubcategoryPageProps {
   params: {
-    category: Product["category"]
+    category: string
     subcategory: string
   }
   searchParams: {

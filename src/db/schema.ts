@@ -101,7 +101,8 @@ export const products = mysqlTable("products", {
   name: varchar("name", { length: 191 }).notNull(),
   description: text("description"),
   images: json("images").$type<StoredFile[] | null>().default(null),
-  subcategoryId: int("subcategoryId").notNull(),
+  category: text("category"),
+  subcategory: text("subcategory"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull().default("0"),
   inventory: int("inventory").notNull().default(0),
   rating: int("rating").notNull().default(0),
@@ -109,15 +110,20 @@ export const products = mysqlTable("products", {
   isFeatured: boolean("isFeatured").default(false),
   storeId: int("storeId").notNull(),
   createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").onUpdateNow(),
 })
 
 export type Product = typeof products.$inferSelect
 
 export const productsRelations = relations(products, ({ one, many }) => ({
   store: one(stores, { fields: [products.storeId], references: [stores.id] }),
+  category: one(categories, {
+    fields: [products.category],
+    references: [categories.slug],
+  }),
   subcategory: one(subcategories, {
-    fields: [products.subcategoryId],
-    references: [subcategories.id],
+    fields: [products.subcategory],
+    references: [subcategories.slug],
   }),
   sizes: many(sizes),
   colors: many(colors),
