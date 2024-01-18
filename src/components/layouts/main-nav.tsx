@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import Link from "next/link"
-import type { MainNavItem } from "@/types"
 
 import { siteConfig } from "@/config/site"
 import { cn, slugify } from "@/lib/utils"
@@ -13,7 +12,6 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { Icons } from "@/components/icons"
 
@@ -29,17 +27,7 @@ interface MainNavProps {
 export function MainNav({ categories }: MainNavProps) {
   const mainNav = {
     title: "Catalog",
-    items: categories?.map((category) => ({
-      title: category.title,
-      href: `/categories/${slugify(category.title)}`,
-      items: category.subcategories?.map((subcategory) => ({
-        title: subcategory.title,
-        href: `/categories/${slugify(category.title)}/${slugify(
-          subcategory.title
-        )}`,
-        items: [],
-      })),
-    })),
+    items: categories,
   }
 
   const lobby = siteConfig.mainNav[0]!
@@ -68,13 +56,15 @@ export function MainNav({ categories }: MainNavProps) {
                       <ListItem
                         key={item.title}
                         title={item.title}
-                        href={item.href}
+                        href={`/categories/${slugify(item.title)}`}
                       />
-                      {item.items?.map((subItem) => (
+                      {item.subcategories?.map((subItem) => (
                         <ListItem
                           key={subItem.title}
                           title={subItem.title}
-                          href={subItem.href}
+                          href={`/categories/${slugify(item.title)}/${slugify(
+                            subItem.title
+                          )}`}
                         />
                       ))}
                     </ul>

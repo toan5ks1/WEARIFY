@@ -110,6 +110,7 @@ export const products = mysqlTable("products", {
   isFeatured: boolean("isFeatured").default(false),
   storeId: int("storeId").notNull(),
   createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").onUpdateNow(),
 })
 
 export type Product = typeof products.$inferSelect

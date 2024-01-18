@@ -3,16 +3,13 @@ import { env } from "@/env.mjs"
 import type { SearchParams } from "@/types"
 
 import { getCategoryWithSubAction } from "@/lib/fetchers/category"
-import { getProducts } from "@/lib/fetchers/product"
-import { getStores } from "@/lib/fetchers/store"
 import { toTitleCase } from "@/lib/utils"
-import { productsSearchParamsSchema } from "@/lib/validations/params"
+import { SubcategoryCard } from "@/components/cards/subcategory-card"
 import {
   PageHeader,
   PageHeaderDescription,
   PageHeaderHeading,
 } from "@/components/page-header"
-import { Products } from "@/components/products"
 import { Shell } from "@/components/shells/shell"
 
 interface CategoryPageProps {
@@ -33,25 +30,31 @@ export function generateMetadata({ params }: CategoryPageProps): Metadata {
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = params
 
-  // Stores transaction
   const categoryWithSub = await getCategoryWithSubAction(category)
-  console.log(categoryWithSub)
 
   return (
     <Shell>
       <PageHeader>
-        <PageHeaderHeading size="sm">{toTitleCase(category)}</PageHeaderHeading>
+        <PageHeaderHeading size="sm">
+          {categoryWithSub?.title ?? category}
+        </PageHeaderHeading>
         <PageHeaderDescription size="sm">
           {`Buy ${category} from the best stores`}
         </PageHeaderDescription>
       </PageHeader>
-      {/* <Products
-        products={productsTransaction.items}
-        pageCount={pageCount}
-        category={category}
-        stores={storesTransaction.items}
-        storePageCount={storePageCount}
-      /> */}
+      <section
+        id="categories"
+        aria-labelledby="categories-heading"
+        className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+      >
+        {categoryWithSub?.subcategories.map((subcategory) => (
+          <SubcategoryCard
+            key={subcategory.slug}
+            category={category}
+            subcategory={subcategory}
+          />
+        ))}
+      </section>
     </Shell>
   )
 }

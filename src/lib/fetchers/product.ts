@@ -64,8 +64,7 @@ export async function getProducts(input: z.infer<typeof getProductsSchema>) {
       "asc" | "desc" | undefined,
     ]) ?? ["createdAt", "desc"]
     const [minPrice, maxPrice] = input.price_range?.split("-") ?? []
-    const categories =
-      (input.categories?.split(".") as Product["category"][]) ?? []
+    const categories = input.categories?.split(".") ?? []
     const subcategories = input.subcategories?.split(".") ?? []
     const storeIds = input.store_ids?.split(".").map(Number) ?? []
 
@@ -82,6 +81,7 @@ export async function getProducts(input: z.infer<typeof getProductsSchema>) {
           inventory: products.inventory,
           rating: products.rating,
           tags: products.tags,
+          isFeatured: products.isFeatured,
           storeId: products.storeId,
           createdAt: products.createdAt,
           updatedAt: products.updatedAt,
