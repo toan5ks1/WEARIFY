@@ -25,7 +25,7 @@ import { PlaceholderImage } from "@/components/placeholder-image"
 interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: Pick<
     Product,
-    "id" | "name" | "price" | "images" | "category" | "inventory"
+    "id" | "name" | "price" | "images" | "categoryId" | "inventory"
   >
   variant?: "default" | "switchable"
   isAddedToCart?: boolean

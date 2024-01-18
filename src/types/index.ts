@@ -1,4 +1,4 @@
-import type { Product, Store } from "@/db/schema"
+import type { Store } from "@/db/schema"
 import { type FileWithPath } from "react-dropzone"
 import type Stripe from "stripe"
 import { type z } from "zod"
@@ -74,13 +74,6 @@ export interface DataTableFilterableColumn<TData>
   options: Option[]
 }
 
-export interface Category {
-  title: Product["category"]
-  image: string
-  icon: React.ComponentType<{ className?: string }>
-  subcategories: Subcategory[]
-}
-
 export interface Subcategory {
   title: string
   description?: string
@@ -120,4 +113,11 @@ export interface UserSubscriptionPlan extends SubscriptionPlan {
   isSubscribed: boolean
   isCanceled: boolean
   isActive: boolean
+}
+
+export interface Dimension {
+  w: number | null
+  h: number | null
+  x: number | null
+  y: number | null
 }

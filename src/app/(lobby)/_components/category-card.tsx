@@ -1,6 +1,8 @@
 import * as React from "react"
 import Link from "next/link"
-import type { Category } from "@/types"
+import { db } from "@/db"
+import { products, type Category } from "@/db/schema"
+import { eq, sql } from "drizzle-orm"
 
 import {
   getProductCount,
