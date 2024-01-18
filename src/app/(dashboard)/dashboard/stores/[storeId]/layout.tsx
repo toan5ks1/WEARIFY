@@ -1,9 +1,9 @@
 import { notFound, redirect } from "next/navigation"
 import { db } from "@/db"
 import { stores } from "@/db/schema"
-import { currentUser } from "@clerk/nextjs"
 import { eq } from "drizzle-orm"
 
+import { getCacheduser } from "@/lib/fetchers/auth"
 import { getSubscriptionPlan } from "@/lib/fetchers/stripe"
 import { getDashboardRedirectPath } from "@/lib/subscription"
 import {
@@ -27,7 +27,7 @@ export default async function StoreLayout({
 }: StoreLayoutProps) {
   const storeId = Number(params.storeId)
 
-  const user = await currentUser()
+  const user = await getCacheduser()
 
   if (!user) {
     redirect("/signin")
@@ -47,7 +47,7 @@ export default async function StoreLayout({
     notFound()
   }
 
-  const subscriptionPlan = await getSubscriptionPlan(user.id)
+  const subscriptionPlan = await getSubscriptionPlan({ userId: user.id })
 
   return (
     <Shell variant="sidebar">
@@ -69,10 +69,8 @@ export default async function StoreLayout({
           />
         ) : null}
       </div>
-      <div className="space-y-8 overflow-auto">
-        <StoreTabs storeId={storeId} />
-        {children}
-      </div>
+      <StoreTabs storeId={storeId} />
+      <div className="overflow-hidden">{children}</div>
     </Shell>
   )
 }

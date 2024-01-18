@@ -1,13 +1,24 @@
+"use server"
+
+import { unstable_noStore as noStore } from "next/cache"
 import { cookies } from "next/headers"
 import { db } from "@/db"
-import { addresses, carts, orders, payments, products } from "@/db/schema"
-import type { CartLineItem, CheckoutItem } from "@/types"
-import { desc, eq, inArray } from "drizzle-orm"
+import {
+  addresses,
+  carts,
+  orders,
+  payments,
+  products,
+  type Order,
+} from "@/db/schema"
+import type { CartLineItem, CheckoutItem, SearchParams } from "@/types"
+import { and, asc, desc, eq, gte, inArray, like, lte, sql } from "drizzle-orm"
 import type Stripe from "stripe"
 import { z } from "zod"
 
 import { checkoutItemSchema } from "@/lib/validations/cart"
 import type { getOrderLineItemsSchema } from "@/lib/validations/order"
+import { ordersSearchParamsSchema } from "@/lib/validations/params"
 
 export async function getOrderLineItems(
   input: z.infer<typeof getOrderLineItemsSchema> & {
@@ -159,6 +170,184 @@ export async function getOrderLineItems(
     }
 
     return lineItems
+  } catch (err) {
+    console.error(err)
+    return []
+  }
+}
+
+export async function getStoreOrders(input: {
+  storeId: number
+  searchParams: SearchParams
+}) {
+  noStore()
+  try {
+    const { page, per_page, sort, customer, status, from, to } =
+      ordersSearchParamsSchema.parse(input.searchParams)
+
+    // Fallback page for invalid page numbers
+    const fallbackPage = isNaN(page) || page < 1 ? 1 : page
+    // Number of items per page
+    const limit = isNaN(per_page) ? 10 : per_page
+    // Number of items to skip
+    const offset = fallbackPage > 0 ? (fallbackPage - 1) * limit : 0
+    // Column and order to sort by
+    const [column, order] = (sort.split(".") as [
+      keyof Order | undefined,
+      "asc" | "desc" | undefined,
+    ]) ?? ["createdAt", "desc"]
+
+    const statuses = status ? status.split(".") : []
+
+    const fromDay = from ? new Date(from) : undefined
+    const toDay = to ? new Date(to) : undefined
+
+    // Transaction is used to ensure both queries are executed in a single transaction
+    return await db.transaction(async (tx) => {
+      const data = await tx
+        .select({
+          id: orders.id,
+          storeId: orders.storeId,
+          quantity: orders.quantity,
+          amount: orders.amount,
+          paymentIntentId: orders.stripePaymentIntentId,
+          status: orders.stripePaymentIntentStatus,
+          customer: orders.email,
+          createdAt: orders.createdAt,
+        })
+        .from(orders)
+        .limit(limit)
+        .offset(offset)
+        .where(
+          and(
+            eq(orders.storeId, input.storeId),
+            // Filter by email
+            customer ? like(orders.email, `%${customer}%`) : undefined,
+            // Filter by status
+            statuses.length > 0
+              ? inArray(orders.stripePaymentIntentStatus, statuses)
+              : undefined,
+            // Filter by createdAt
+            fromDay && toDay
+              ? and(
+                  gte(orders.createdAt, fromDay),
+                  lte(orders.createdAt, toDay)
+                )
+              : undefined
+          )
+        )
+        .orderBy(
+          column && column in orders
+            ? order === "asc"
+              ? asc(orders[column])
+              : desc(orders[column])
+            : desc(orders.createdAt)
+        )
+
+      const count = await tx
+        .select({
+          count: sql<number>`count(*)`,
+        })
+        .from(orders)
+        .where(
+          and(
+            eq(orders.storeId, input.storeId),
+            // Filter by email
+            customer ? like(orders.email, `%${customer}%`) : undefined,
+            // Filter by status
+            statuses.length > 0
+              ? inArray(orders.stripePaymentIntentStatus, statuses)
+              : undefined,
+            // Filter by createdAt
+            fromDay && toDay
+              ? and(
+                  gte(orders.createdAt, fromDay),
+                  lte(orders.createdAt, toDay)
+                )
+              : undefined
+          )
+        )
+        .execute()
+        .then((res) => res[0]?.count ?? 0)
+
+      const pageCount = Math.ceil(count / limit)
+
+      return {
+        data,
+        pageCount,
+      }
+    })
+  } catch (err) {
+    console.error(err)
+    return {
+      data: [],
+      pageCount: 0,
+    }
+  }
+}
+
+export async function getSalesCount(input: {
+  storeId: number
+  fromDay?: Date
+  toDay?: Date
+}) {
+  noStore()
+  try {
+    const { storeId, fromDay, toDay } = input
+
+    const storeOrders = await db
+      .select({
+        amount: orders.amount,
+      })
+      .from(orders)
+      .where(
+        and(
+          eq(orders.storeId, storeId),
+          fromDay && toDay
+            ? and(gte(orders.createdAt, fromDay), lte(orders.createdAt, toDay))
+            : undefined
+        )
+      )
+
+    const sales = storeOrders.reduce(
+      (acc, order) => acc + Number(order.amount),
+      0
+    )
+
+    return sales
+  } catch (err) {
+    console.error(err)
+    return 0
+  }
+}
+
+export async function getCustomers(input: {
+  storeId: number
+  fromDay?: Date
+  toDay?: Date
+}) {
+  noStore()
+  try {
+    const { storeId, fromDay, toDay } = input
+
+    return await db
+      .selectDistinct({
+        name: orders.name,
+        email: orders.email,
+        totalSpent: sql<number>`sum(${orders.amount})`,
+      })
+      .from(orders)
+      .where(
+        and(
+          eq(orders.storeId, storeId),
+          // Filter by createdAt
+          fromDay && toDay
+            ? and(gte(orders.createdAt, fromDay), lte(orders.createdAt, toDay))
+            : undefined
+        )
+      )
+      .groupBy(orders.email, orders.name)
+      .orderBy(desc(sql<number>`sum(${orders.amount})`))
   } catch (err) {
     console.error(err)
     return []
