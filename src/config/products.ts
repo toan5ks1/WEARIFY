@@ -1,5 +1,5 @@
 import { type Product } from "@/db/schema"
-import type { Category, Option } from "@/types"
+import type { Category, MenuItem, Option } from "@/types"
 import { MixIcon } from "@radix-ui/react-icons"
 
 import { Icons } from "@/components/icons"
@@ -194,18 +194,12 @@ export const productTags = [
   "exclusive",
 ]
 
-export function getSubcategories(category?: string): Option[] {
-  if (!category) return []
-
-  const subcategories =
-    productCategories
-      .find((c) => c.title === category)
-      ?.subcategories.map((s) => ({
-        label: s.title,
-        value: s.slug,
-      })) ?? []
-
-  return subcategories
+export function getSubcategories(
+  categories: MenuItem[],
+  category?: string
+): MenuItem[] {
+  console.log(categories)
+  return categories?.find((item) => item.slug === category)?.subcategories ?? []
 }
 
 export const dummyProducts: Product[] = [

@@ -21,11 +21,12 @@ export async function getCategoryWithSubAction(slug: string) {
 
 export async function getAllCategoryWithSubAction() {
   return await db.query.categories.findMany({
-    columns: { title: true },
+    columns: { title: true, slug: true },
     with: {
       subcategories: {
         columns: {
           title: true,
+          slug: true,
         },
       },
     },

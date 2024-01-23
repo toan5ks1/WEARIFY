@@ -40,7 +40,7 @@ export const storesRelations = relations(stores, ({ many }) => ({
 export const categories = mysqlTable("category", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 191 }).notNull().unique(),
-  slug: text("slug"),
+  slug: text("slug").notNull(),
   description: text("description"),
   createdAt: timestamp("createdAt").defaultNow(),
 })
@@ -56,7 +56,7 @@ export const subcategories = mysqlTable("sub_category", {
   title: varchar("title", { length: 191 }).notNull(),
   description: text("description"),
   images: json("images").$type<StoredFile | null>().default(null),
-  slug: text("slug"),
+  slug: text("slug").notNull(),
   categoryId: int("categoryId").notNull(),
   createdAt: timestamp("createdAt").defaultNow(),
 })

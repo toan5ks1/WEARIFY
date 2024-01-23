@@ -25,7 +25,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 
 type AwaitedProduct = Pick<
   Product,
-  "id" | "name" | "category" | "price" | "inventory" | "rating" | "createdAt"
+  "id" | "name" | "price" | "inventory" | "rating" | "createdAt"
 >
 
 interface ProductsTableShellProps {
@@ -87,24 +87,24 @@ export function ProductsTableShell({
           <DataTableColumnHeader column={column} title="Name" />
         ),
       },
-      {
-        accessorKey: "category",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Category" />
-        ),
-        cell: ({ cell }) => {
-          const categories = Object.values(products.category.enumValues)
-          const category = cell.getValue() as Product["category"]
+      // {
+      //   accessorKey: "category",
+      //   header: ({ column }) => (
+      //     <DataTableColumnHeader column={column} title="Category" />
+      //   ),
+      //   cell: ({ cell }) => {
+      //     const categories = Object.values(products.category.enumValues)
+      //     const category = cell.getValue() as Product["category"]
 
-          if (!categories.includes(category)) return null
+      //     if (!categories.includes(category)) return null
 
-          return (
-            <Badge variant="outline" className="capitalize">
-              {category}
-            </Badge>
-          )
-        },
-      },
+      //     return (
+      //       <Badge variant="outline" className="capitalize">
+      //         {category}
+      //       </Badge>
+      //     )
+      //   },
+      // },
       {
         accessorKey: "price",
         header: ({ column }) => (
@@ -217,16 +217,16 @@ export function ProductsTableShell({
       columns={columns}
       data={data}
       pageCount={pageCount}
-      filterableColumns={[
-        {
-          id: "category",
-          title: "Category",
-          options: products.category.enumValues.map((category) => ({
-            label: `${category.charAt(0).toUpperCase()}${category.slice(1)}`,
-            value: category,
-          })),
-        },
-      ]}
+      // filterableColumns={[
+      //   {
+      //     id: "category",
+      //     title: "Category",
+      //     options: products.category.enumValues.map((category) => ({
+      //       label: `${category.charAt(0).toUpperCase()}${category.slice(1)}`,
+      //       value: category,
+      //     })),
+      //   },
+      // ]}
       searchableColumns={[
         {
           id: "name",

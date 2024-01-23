@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { MenuItem } from "@/types"
 
 import { siteConfig } from "@/config/site"
 import { cn, slugify } from "@/lib/utils"
@@ -14,11 +15,6 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 import { Icons } from "@/components/icons"
-
-interface MenuItem {
-  title: string
-  subcategories?: MenuItem[]
-}
 
 interface MainNavProps {
   categories?: MenuItem[]
@@ -56,13 +52,13 @@ export function MainNav({ categories }: MainNavProps) {
                       <ListItem
                         key={item.title}
                         title={item.title}
-                        href={`/categories/${slugify(item.title)}`}
+                        href={`/categories/${item.slug}`}
                       />
                       {item.subcategories?.map((subItem) => (
                         <ListItem
                           key={subItem.title}
                           title={subItem.title}
-                          href={`/categories/${slugify(item.title)}/${slugify(
+                          href={`/categories/${item.slug}/${slugify(
                             subItem.title
                           )}`}
                         />

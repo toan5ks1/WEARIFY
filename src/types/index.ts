@@ -11,6 +11,12 @@ import type {
 } from "@/lib/validations/cart"
 import type { Icons } from "@/components/icons"
 
+export interface MenuItem {
+  title: string
+  slug: string
+  subcategories?: MenuItem[]
+}
+
 export interface NavItem {
   title: string
   href?: string

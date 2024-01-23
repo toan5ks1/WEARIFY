@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import Image from "next/image"
-import { products } from "@/db/schema"
 import type { FileWithPreview } from "@/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { generateReactHelpers } from "@uploadthing/react/hooks"
@@ -12,6 +11,7 @@ import { type z } from "zod"
 
 import { getSubcategories } from "@/config/products"
 import { addProduct, checkProduct } from "@/lib/actions/product"
+import { getAllCategoryWithSubAction } from "@/lib/fetchers/category"
 import { catchError, isArrayOfFile } from "@/lib/utils"
 import { productSchema } from "@/lib/validations/product"
 import { Button } from "@/components/ui/button"
@@ -47,7 +47,7 @@ type Inputs = z.infer<typeof productSchema>
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>()
 
-export function AddProductForm({ storeId }: AddProductFormProps) {
+export async function AddProductForm({ storeId }: AddProductFormProps) {
   const [files, setFiles] = React.useState<FileWithPreview[] | null>(null)
 
   const [isPending, startTransition] = React.useTransition()
@@ -61,13 +61,14 @@ export function AddProductForm({ storeId }: AddProductFormProps) {
       description: "",
       price: "",
       inventory: NaN,
-      category: "skateboards",
+      category: "",
       subcategory: "",
       images: [],
     },
   })
 
-  const subcategories = getSubcategories(form.watch("category"))
+  const categories = await getAllCategoryWithSubAction()
+  const subcategories = getSubcategories(categories, form.watch("category"))
 
   function onSubmit(data: Inputs) {
     startTransition(async () => {
@@ -173,17 +174,15 @@ export function AddProductForm({ storeId }: AddProductFormProps) {
                   </FormControl>
                   <SelectContent>
                     <SelectGroup>
-                      {Object.values(products.category.enumValues).map(
-                        (option) => (
-                          <SelectItem
-                            key={option}
-                            value={option}
-                            className="capitalize"
-                          >
-                            {option}
-                          </SelectItem>
-                        )
-                      )}
+                      {categories.map((item) => (
+                        <SelectItem
+                          key={item.slug}
+                          value={item.slug}
+                          className="capitalize"
+                        >
+                          {item.title}
+                        </SelectItem>
+                      ))}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -209,8 +208,8 @@ export function AddProductForm({ storeId }: AddProductFormProps) {
                   <SelectContent>
                     <SelectGroup>
                       {subcategories.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
+                        <SelectItem key={option.slug} value={option.slug}>
+                          {option.title}
                         </SelectItem>
                       ))}
                     </SelectGroup>
