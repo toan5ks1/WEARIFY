@@ -1,8 +1,10 @@
 import type { Metadata } from "next"
+import { db } from "@/db"
+import { categories } from "@/db/schema"
 import { env } from "@/env.mjs"
 import type { SearchParams } from "@/types"
+import { eq } from "drizzle-orm"
 
-import { getCategoryWithSubAction } from "@/lib/fetchers/category"
 import { toTitleCase } from "@/lib/utils"
 import { SubcategoryCard } from "@/components/cards/subcategory-card"
 import {
@@ -30,7 +32,12 @@ export function generateMetadata({ params }: CategoryPageProps): Metadata {
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = params
 
-  const categoryWithSub = await getCategoryWithSubAction(category)
+  const categoryWithSub = await db.query.categories.findFirst({
+    where: eq(categories.slug, category),
+    with: {
+      subcategories: true,
+    },
+  })
 
   return (
     <Shell>

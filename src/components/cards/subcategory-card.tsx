@@ -1,19 +1,10 @@
 import * as React from "react"
-import { unstable_noStore as noStore } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
 import { type Subcategory } from "@/db/schema"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-import { PlaceholderImage } from "../placeholder-image"
 import { AspectRatio } from "../ui/aspect-ratio"
 
 interface SubcategoryCardProps {

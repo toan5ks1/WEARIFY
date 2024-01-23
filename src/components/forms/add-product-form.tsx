@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-import type { FileWithPreview } from "@/types"
+import type { FileWithPreview, MenuItem } from "@/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { generateReactHelpers } from "@uploadthing/react/hooks"
 import { useForm } from "react-hook-form"
@@ -11,7 +11,6 @@ import { type z } from "zod"
 
 import { getSubcategories } from "@/config/products"
 import { addProduct, checkProduct } from "@/lib/actions/product"
-import { getAllCategoryWithSubAction } from "@/lib/fetchers/category"
 import { catchError, isArrayOfFile } from "@/lib/utils"
 import { productSchema } from "@/lib/validations/product"
 import { Button } from "@/components/ui/button"
@@ -41,13 +40,14 @@ import type { OurFileRouter } from "@/app/api/uploadthing/core"
 
 interface AddProductFormProps {
   storeId: number
+  categories: MenuItem[]
 }
 
 type Inputs = z.infer<typeof productSchema>
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>()
 
-export async function AddProductForm({ storeId }: AddProductFormProps) {
+export function AddProductForm({ storeId, categories }: AddProductFormProps) {
   const [files, setFiles] = React.useState<FileWithPreview[] | null>(null)
 
   const [isPending, startTransition] = React.useTransition()
@@ -61,13 +61,12 @@ export async function AddProductForm({ storeId }: AddProductFormProps) {
       description: "",
       price: "",
       inventory: NaN,
-      category: "",
+      category: categories[0]?.title,
       subcategory: "",
       images: [],
     },
   })
 
-  const categories = await getAllCategoryWithSubAction()
   const subcategories = getSubcategories(categories, form.watch("category"))
 
   function onSubmit(data: Inputs) {

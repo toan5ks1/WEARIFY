@@ -198,8 +198,10 @@ export function getSubcategories(
   categories: MenuItem[],
   category?: string
 ): MenuItem[] {
-  console.log(categories)
-  return categories?.find((item) => item.slug === category)?.subcategories ?? []
+  return (
+    (categories ?? []).find((item) => item.slug === category)?.subcategories ??
+    []
+  )
 }
 
 export const dummyProducts: Product[] = [

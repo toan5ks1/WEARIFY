@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { env } from "@/env.mjs"
 import { currentUser } from "@clerk/nextjs"
 
+import { getAllCategoryWithSubAction } from "@/lib/fetchers/category"
 import {
   Card,
   CardContent,
@@ -28,6 +29,7 @@ export default async function NewProductPage({ params }: NewProductPageProps) {
   const storeId = Number(params.storeId)
 
   const user = await currentUser()
+  const categories = await getAllCategoryWithSubAction()
 
   if (!user) {
     redirect("/sigin")
@@ -40,7 +42,7 @@ export default async function NewProductPage({ params }: NewProductPageProps) {
         <CardDescription>Add a new product to your store</CardDescription>
       </CardHeader>
       <CardContent>
-        <AddProductForm storeId={storeId} />
+        <AddProductForm storeId={storeId} categories={categories} />
       </CardContent>
     </Card>
   )
